@@ -1,13 +1,13 @@
-package pl.kmalski.vo;
+package pl.kmalski.verification;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class VerificationOrchestratorApplication {
+public class VerificationApplication {
 
     void main(String[] args) {
-        SpringApplication.run(VerificationOrchestratorApplication.class, args);
+        SpringApplication.run(VerificationApplication.class, args);
     }
 
 }

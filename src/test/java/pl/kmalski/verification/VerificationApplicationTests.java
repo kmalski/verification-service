@@ -1,10 +1,10 @@
-package pl.kmalski.vo;
+package pl.kmalski.verification;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class VerificationOrchestratorApplicationTests {
+class VerificationApplicationTests {
 
 	@Test
 	void contextLoads() {
