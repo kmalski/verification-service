@@ -2,8 +2,8 @@
 
 ## Project Structure & Module Organization
 
-This is a Gradle-based Spring Boot application named `verification-orchestrator`. Production code lives under
-`src/main/java/pl/kmalski/vo`, with the application entry point in `VerificationOrchestratorApplication.java`.
+This is a Gradle-based Spring Boot application named `verification-service`. Production code lives under
+`src/main/java/pl/kmalski/vo`, with the application entry point in `VerificationApplication.java`.
 Configuration files belong in `src/main/resources`; the current application name is configured in `application.yaml`.
 Tests mirror the main package structure under `src/test/java/pl/kmalski/vo`. Generated build output is written to
 `build/` and should not be edited or committed.

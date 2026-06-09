@@ -1,3 +1,7 @@
 spring:
   application:
-    name: 'verification-orchestrator'
+    name: 'verification-service'
+
+verification:
+  check:
+    timeout: 5s

@@ -1,1 +1,1 @@
-rootProject.name = "verification-orchestrator"
+rootProject.name = "verification-service"
