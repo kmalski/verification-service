@@ -6,7 +6,7 @@ $startBody = @{
     payment = @{
         paymentId  = "payment-1"
         customerId = "customer-1"
-        amount     = 10.00
+        amount     = "100.00"
         currency   = "PLN"
         country    = "PL"
     }

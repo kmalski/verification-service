@@ -16,6 +16,14 @@ public record Amount(BigDecimal value) {
         }
     }
 
+    public static Amount valueOf(String value) {
+        return new Amount(new BigDecimal(value));
+    }
+
+    public boolean greaterThan(Amount other) {
+        return value.compareTo(other.value()) > 0;
+    }
+
     @NonNull
     @Override
     public String toString() {

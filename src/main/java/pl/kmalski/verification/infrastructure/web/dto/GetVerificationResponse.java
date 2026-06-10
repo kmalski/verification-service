@@ -11,7 +11,7 @@ import java.util.UUID;
 public record GetVerificationResponse(UUID verificationId,
                                       VerificationStatus status,
                                       VerificationDecision decision,
-                                      List<VerificationCheckResponse> checkResults) {
+                                      List<VerificationCheckResponse> checks) {
 
     public record VerificationCheckResponse(VerificationCheckType type,
                                             VerificationCheckStatus status,

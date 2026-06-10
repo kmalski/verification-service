@@ -9,16 +9,23 @@ class CurrencyTests {
 
     @Test
     void shouldExposeValue() {
-        var currency = new Currency("PLN");
+        var currency = new Currency("pln");
 
         assertThat(currency.value()).isEqualTo("PLN");
         assertThat(currency.toString()).isEqualTo("PLN");
     }
 
     @Test
-    void shouldRejectBlankValue() {
-        assertThatThrownBy(() -> new Currency(" "))
+    void shouldRejectInvalidValue() {
+        assertThatThrownBy(() -> new Currency("12"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Currency cannot be blank");
+                .hasMessage("Currency must be a valid ISO 4217 code");
+    }
+
+    @Test
+    void shouldRejectUnknownFormat() {
+        assertThatThrownBy(() -> new Currency("PL"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Currency must be a valid ISO 4217 code");
     }
 }

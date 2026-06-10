@@ -30,7 +30,7 @@ class SanctionsCheckTests {
     @Test
     void shouldPassWhenCountryIsNotSanctioned() {
         var payment = validPaymentData();
-        given(sanctionsApi.isCountrySanctioned(payment.country().value())).willReturn(false);
+        given(sanctionsApi.isCountrySanctioned(payment.country())).willReturn(false);
 
         var result = sanctionsCheck.execute(payment);
 
@@ -40,7 +40,7 @@ class SanctionsCheckTests {
     @Test
     void shouldFailWhenCountryIsSanctioned() {
         var payment = validPaymentData();
-        given(sanctionsApi.isCountrySanctioned(payment.country().value())).willReturn(true);
+        given(sanctionsApi.isCountrySanctioned(payment.country())).willReturn(true);
 
         var result = sanctionsCheck.execute(payment);
 

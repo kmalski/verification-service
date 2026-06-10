@@ -27,7 +27,7 @@ public class VerificationController {
         return verificationDtoMapper.toStartVerificationResponse(result);
     }
 
-    @GetMapping("/{value}")
+    @GetMapping("/{id}")
     public GetVerificationResponse getVerification(@PathVariable UUID id) {
         var query = verificationDtoMapper.toGetVerificationQuery(id);
         var result = getVerificationUseCase.get(query);

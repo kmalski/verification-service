@@ -9,16 +9,23 @@ class CountryTests {
 
     @Test
     void shouldExposeValue() {
-        var country = new Country("PL");
+        var country = new Country(" pl ");
 
         assertThat(country.value()).isEqualTo("PL");
         assertThat(country.toString()).isEqualTo("PL");
     }
 
     @Test
-    void shouldRejectBlankValue() {
-        assertThatThrownBy(() -> new Country(" "))
+    void shouldRejectInvalidValue() {
+        assertThatThrownBy(() -> new Country("123"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Country cannot be blank");
+                .hasMessage("Country must be a valid ISO 3166-1 alpha-2 code");
+    }
+
+    @Test
+    void shouldRejectUnknownFormat() {
+        assertThatThrownBy(() -> new Country("POL"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Country must be a valid ISO 3166-1 alpha-2 code");
     }
 }
