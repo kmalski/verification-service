@@ -1,9 +1,9 @@
 package pl.kmalski.verification.infrastructure.inmemory;
 
 import org.springframework.stereotype.Repository;
+import pl.kmalski.verification.application.port.VerificationRepository;
 import pl.kmalski.verification.domain.model.Verification;
 import pl.kmalski.verification.domain.model.VerificationId;
-import pl.kmalski.verification.application.port.VerificationRepository;
 
 import java.util.Map;
 import java.util.Optional;
