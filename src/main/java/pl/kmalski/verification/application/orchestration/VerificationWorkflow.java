@@ -20,33 +20,22 @@ public class VerificationWorkflow {
 
     @Async
     public void start(VerificationId verificationId) {
+        var verification = repository.findById(verificationId)
+                .orElseThrow(() -> new IllegalStateException("Could not find verification with id " + verificationId));
+
+        verification.markInProgress();
+        repository.save(verification);
+
         try {
-            var verification = repository.findById(verificationId)
-                    .orElseThrow(() -> new IllegalStateException("Could not find verification with id " + verificationId));
-
-            verification.markInProgress();
-            repository.save(verification);
-
             var results = orchestrator.execute(verification.getPayment());
             var decision = decisionPolicy.decide(results);
 
             verification.complete(decision, results);
             repository.save(verification);
         } catch (Exception exc) {
-            repository.findById(verificationId).ifPresentOrElse(
-                    verification -> updateFailed(verification, exc),
-                    () -> logFailure(verificationId, exc)
-            );
+            verification.markFailed(exc.getMessage());
+            repository.save(verification);
         }
-    }
-
-    private void updateFailed(Verification verification, Exception exc) {
-        verification.markFailed(exc.getMessage());
-        repository.save(verification);
-    }
-
-    private void logFailure(VerificationId verificationId, Exception exc) {
-        log.error("Verification checks failed, and original verification with id {} cannot be found", verificationId, exc);
     }
 
 }

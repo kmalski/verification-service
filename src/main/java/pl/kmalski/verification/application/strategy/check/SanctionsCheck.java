@@ -7,6 +7,8 @@ import pl.kmalski.verification.domain.model.PaymentData;
 import pl.kmalski.verification.domain.model.VerificationCheckResult;
 import pl.kmalski.verification.domain.model.VerificationCheckType;
 
+import static pl.kmalski.verification.domain.model.VerificationCheckType.SANCTIONS;
+
 @Component
 @RequiredArgsConstructor
 public class SanctionsCheck implements VerificationCheck {
@@ -15,7 +17,7 @@ public class SanctionsCheck implements VerificationCheck {
 
     @Override
     public VerificationCheckType type() {
-        return VerificationCheckType.SANCTIONS;
+        return SANCTIONS;
     }
 
     @Override
@@ -23,8 +25,8 @@ public class SanctionsCheck implements VerificationCheck {
         boolean isCountrySanctioned = sanctionsApi.isCountrySanctioned(payment.country());
 
         return isCountrySanctioned
-                ? VerificationCheckResult.failed(type(), "Sanctioned country")
-                : VerificationCheckResult.passed(type());
+                ? VerificationCheckResult.failed(SANCTIONS, "Sanctioned country")
+                : VerificationCheckResult.passed(SANCTIONS);
     }
 
 }

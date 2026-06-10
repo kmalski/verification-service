@@ -8,6 +8,8 @@ import pl.kmalski.verification.domain.model.PaymentData;
 import pl.kmalski.verification.domain.model.VerificationCheckResult;
 import pl.kmalski.verification.domain.model.VerificationCheckType;
 
+import static pl.kmalski.verification.domain.model.VerificationCheckType.VELOCITY;
+
 @Component
 @RequiredArgsConstructor
 public class VelocityCheck implements VerificationCheck {
@@ -17,7 +19,7 @@ public class VelocityCheck implements VerificationCheck {
 
     @Override
     public VerificationCheckType type() {
-        return VerificationCheckType.VELOCITY;
+        return VELOCITY;
     }
 
     @Override
@@ -25,10 +27,10 @@ public class VelocityCheck implements VerificationCheck {
         int count = velocityApi.count(payment.customerId(), configuration.getVelocityWindow());
 
         if (count > configuration.getVelocityLimit()) {
-            return VerificationCheckResult.failed(type(), "High velocity");
+            return VerificationCheckResult.failed(VELOCITY, "High velocity");
         }
 
-        return VerificationCheckResult.passed(type());
+        return VerificationCheckResult.passed(VELOCITY);
     }
 
 }
