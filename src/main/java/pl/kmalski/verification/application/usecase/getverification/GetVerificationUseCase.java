@@ -5,8 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.kmalski.verification.application.port.VerificationRepository;
 import pl.kmalski.verification.application.usecase.getverification.GetVerificationResult.VerificationCheckResult;
-import pl.kmalski.verification.domain.exception.VerificationNotFound;
-import pl.kmalski.verification.domain.model.Verification;
+import pl.kmalski.verification.domain.exception.VerificationNotFoundException;
 
 @Slf4j
 @Service
@@ -20,7 +19,7 @@ public class GetVerificationUseCase {
 
         log.debug("Fetching verification {}", verificationId);
         var verification = repository.findById(verificationId)
-                .orElseThrow(() -> new VerificationNotFound(verificationId));
+                .orElseThrow(() -> new VerificationNotFoundException(verificationId));
 
         log.debug("Verification {} loaded with status {}", verificationId, verification.getStatus());
         return new GetVerificationResult(

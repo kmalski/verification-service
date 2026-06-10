@@ -2,12 +2,12 @@ package pl.kmalski.verification.application.usecase.getverification;
 
 import pl.kmalski.verification.domain.model.VerificationId;
 
-import static java.util.Objects.requireNonNull;
+import static pl.kmalski.verification.domain.validation.VerificationValidator.requireNonNull;
 
 public record GetVerificationQuery(VerificationId verificationId) {
 
     public GetVerificationQuery {
-        requireNonNull(verificationId);
+        requireNonNull(verificationId, "Verification id");
     }
 
 }

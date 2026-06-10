@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kmalski.verification.application.port.VerificationRepository;
-import pl.kmalski.verification.domain.exception.VerificationNotFound;
+import pl.kmalski.verification.domain.exception.VerificationNotFoundException;
 import pl.kmalski.verification.domain.model.*;
 
 import java.math.BigDecimal;
@@ -47,7 +47,7 @@ class GetVerificationUseCaseTests {
         given(repository.findById(verificationId)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> useCase.get(new GetVerificationQuery(verificationId)))
-                .isInstanceOf(VerificationNotFound.class)
+                .isInstanceOf(VerificationNotFoundException.class)
                 .hasMessageMatching("Verification with id [a-f0-9\\-]+ not found");
 
         then(repository).should().findById(verificationId);

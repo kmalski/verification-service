@@ -9,7 +9,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.kmalski.verification.application.usecase.getverification.GetVerificationUseCase;
 import pl.kmalski.verification.application.usecase.startverification.StartVerificationUseCase;
-import pl.kmalski.verification.domain.exception.VerificationNotFound;
+import pl.kmalski.verification.domain.exception.VerificationNotFoundException;
 import pl.kmalski.verification.domain.model.VerificationId;
 import pl.kmalski.verification.infrastructure.web.mapper.VerificationDtoMapper;
 
@@ -37,13 +37,13 @@ class VerificationExceptionHandlerTests {
     void shouldReturnNotFoundWhenVerificationIsMissing() throws Exception {
         var verificationId = VerificationId.random();
         when(getVerificationUseCase.get(any()))
-                .thenThrow(new VerificationNotFound(verificationId));
+                .thenThrow(new VerificationNotFoundException(verificationId));
 
         mockMvc.perform(get("/verifications/{id}", verificationId))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.title").value("Verification not found"))
+                .andExpect(jsonPath("$.title").value("Not found"))
                 .andExpect(jsonPath("$.detail").value("Verification with id " + verificationId + " not found"))
-                .andExpect(jsonPath("$.path").value("/verifications/" + verificationId));
+                .andExpect(jsonPath("$.instance").value("/verifications/" + verificationId));
     }
 
     @Test
@@ -64,7 +64,7 @@ class VerificationExceptionHandlerTests {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Bad request"))
                 .andExpect(jsonPath("$.detail").value("Country must be a valid ISO 3166-1 alpha-2 code"))
-                .andExpect(jsonPath("$.path").value("/verifications"));
+                .andExpect(jsonPath("$.instance").value("/verifications"));
     }
 
 }

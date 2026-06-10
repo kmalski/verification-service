@@ -1,6 +1,6 @@
 package pl.kmalski.verification.domain.model;
 
-import static java.util.Objects.requireNonNull;
+import static pl.kmalski.verification.domain.validation.VerificationValidator.requireNonNull;
 
 public record PaymentData(PaymentId paymentId,
                           CustomerId customerId,
@@ -9,11 +9,11 @@ public record PaymentData(PaymentId paymentId,
                           Country country) {
 
     public PaymentData {
-        requireNonNull(paymentId);
-        requireNonNull(customerId);
-        requireNonNull(amount);
-        requireNonNull(currency);
-        requireNonNull(country);
+        requireNonNull(paymentId, "Payment id");
+        requireNonNull(customerId, "Customer id");
+        requireNonNull(amount, "Amount");
+        requireNonNull(currency, "Currency");
+        requireNonNull(country, "Country");
     }
 
 }

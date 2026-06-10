@@ -1,6 +1,7 @@
 package pl.kmalski.verification.domain.model;
 
 import org.junit.jupiter.api.Test;
+import pl.kmalski.verification.domain.exception.InvalidVerificationException;
 
 import java.util.UUID;
 
@@ -21,6 +22,7 @@ class VerificationIdTests {
     @Test
     void shouldRejectNullUuid() {
         assertThatThrownBy(() -> new VerificationId(null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(InvalidVerificationException.class)
+                .hasMessage("Verification id cannot be null");
     }
 }

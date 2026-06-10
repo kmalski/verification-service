@@ -1,20 +1,21 @@
 package pl.kmalski.verification.domain.model;
 
 import org.jspecify.annotations.NonNull;
+import pl.kmalski.verification.domain.exception.InvalidVerificationException;
 
 import java.util.Locale;
 
-import static java.util.Objects.requireNonNull;
+import static pl.kmalski.verification.domain.validation.VerificationValidator.requireNonNull;
 
 public record Currency(String value) {
 
     public Currency {
-        requireNonNull(value);
+        requireNonNull(value, "Currency");
 
         value = value.trim().toUpperCase(Locale.ROOT);
 
         if (!value.matches("[A-Z]{3}")) {
-            throw new IllegalArgumentException("Currency must be a valid ISO 4217 code");
+            throw new InvalidVerificationException("Currency must be a valid ISO 4217 code");
         }
     }
 

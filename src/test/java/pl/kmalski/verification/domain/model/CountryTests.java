@@ -8,11 +8,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CountryTests {
 
     @Test
-    void shouldExposeValue() {
-        var country = new Country(" pl ");
-
-        assertThat(country.value()).isEqualTo("PL");
-        assertThat(country.toString()).isEqualTo("PL");
+    void shouldRejectNullCountry() {
+        assertThatThrownBy(() -> new Country(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Country cannot be null");
     }
 
     @Test

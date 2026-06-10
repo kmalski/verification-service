@@ -1,6 +1,7 @@
 package pl.kmalski.verification.domain.model;
 
 import org.junit.jupiter.api.Test;
+import pl.kmalski.verification.domain.exception.InvalidVerificationException;
 
 import java.math.BigDecimal;
 
@@ -28,7 +29,13 @@ class PaymentDataTests {
 
     @Test
     void shouldRejectNullArguments() {
-        assertThatThrownBy(() -> new PaymentData(null, new CustomerId("customer-1"), new Amount(new BigDecimal("1.00")), new Currency("PLN"), new Country("PL")))
-                .isInstanceOf(NullPointerException.class);
+        var customerId = new CustomerId("customer-1");
+        var amount = new Amount(new BigDecimal("12.50"));
+        var currency = new Currency("PLN");
+        var country = new Country("PL");
+
+        assertThatThrownBy(() -> new PaymentData(null, customerId, amount, currency, country))
+                .isInstanceOf(InvalidVerificationException.class)
+                .hasMessage("Payment id cannot be null");
     }
 }

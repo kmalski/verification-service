@@ -1,18 +1,19 @@
 package pl.kmalski.verification.domain.model;
 
 import org.jspecify.annotations.NonNull;
+import pl.kmalski.verification.domain.exception.InvalidVerificationException;
 
 import java.math.BigDecimal;
 
-import static java.util.Objects.requireNonNull;
+import static pl.kmalski.verification.domain.validation.VerificationValidator.requireNonNull;
 
 public record Amount(BigDecimal value) {
 
     public Amount {
-        requireNonNull(value);
+        requireNonNull(value, "Amount");
 
         if (value.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount must be positive");
+            throw new InvalidVerificationException("Amount must be positive");
         }
     }
 

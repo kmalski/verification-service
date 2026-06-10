@@ -1,6 +1,7 @@
 package pl.kmalski.verification.domain.policy;
 
 import org.junit.jupiter.api.Test;
+import pl.kmalski.verification.domain.exception.InvalidVerificationException;
 import pl.kmalski.verification.domain.model.VerificationCheckResult;
 import pl.kmalski.verification.domain.model.VerificationCheckType;
 import pl.kmalski.verification.domain.model.VerificationDecision;
@@ -53,6 +54,7 @@ class VerificationDecisionPolicyTests {
     @Test
     void shouldRejectNullResults() {
         assertThatThrownBy(() -> policy.decide(null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(InvalidVerificationException.class)
+                .hasMessage("Check results cannot be null");
     }
 }

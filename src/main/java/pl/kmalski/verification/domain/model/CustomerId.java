@@ -2,14 +2,12 @@ package pl.kmalski.verification.domain.model;
 
 import org.jspecify.annotations.NonNull;
 
-import java.util.random.RandomGenerator;
-
-import static java.util.Objects.requireNonNull;
+import static pl.kmalski.verification.domain.validation.VerificationValidator.requireNonNull;
 
 public record CustomerId(String value) {
 
     public CustomerId {
-        requireNonNull(value);
+        requireNonNull(value, "Customer id");
     }
 
     @NonNull

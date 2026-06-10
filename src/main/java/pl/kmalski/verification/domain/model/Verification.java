@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Objects.requireNonNull;
+import static pl.kmalski.verification.domain.validation.VerificationValidator.requireNonNull;
 
 @Getter
 public class Verification {
@@ -26,11 +26,11 @@ public class Verification {
                          VerificationStatus status,
                          VerificationDecision decision,
                          List<VerificationCheckResult> checkResults) {
-        this.id = requireNonNull(id);
-        this.payment = requireNonNull(payment);
-        this.status = requireNonNull(status);
+        this.id = requireNonNull(id, "Verification id");
+        this.payment = requireNonNull(payment, "Payment");
+        this.status = requireNonNull(status, "Status");
         this.decision = decision;
-        this.checkResults = requireNonNull(checkResults);
+        this.checkResults = requireNonNull(checkResults, "Check results");
     }
 
     public static Verification start(PaymentData payment) {
@@ -51,8 +51,8 @@ public class Verification {
     }
 
     public void complete(VerificationDecision decision, List<VerificationCheckResult> checkResults) {
-        requireNonNull(decision);
-        requireNonNull(checkResults);
+        requireNonNull(decision, "Decision");
+        requireNonNull(checkResults, "Check results");
 
         if (status != VerificationStatus.IN_PROGRESS) {
             throw cannotTransitionTo(VerificationStatus.COMPLETED);
@@ -64,7 +64,7 @@ public class Verification {
     }
 
     public void markFailed(String reason) {
-        requireNonNull(reason);
+        requireNonNull(reason, "Reason");
 
         if (status != VerificationStatus.IN_PROGRESS) {
             throw cannotTransitionTo(VerificationStatus.FAILED);

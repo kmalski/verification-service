@@ -8,11 +8,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CurrencyTests {
 
     @Test
-    void shouldExposeValue() {
-        var currency = new Currency("pln");
-
-        assertThat(currency.value()).isEqualTo("PLN");
-        assertThat(currency.toString()).isEqualTo("PLN");
+    void shouldRejectNullCurrency() {
+        assertThatThrownBy(() -> new Currency(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Currency cannot be null");
     }
 
     @Test

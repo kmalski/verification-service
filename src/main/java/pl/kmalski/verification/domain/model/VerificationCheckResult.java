@@ -1,18 +1,20 @@
 package pl.kmalski.verification.domain.model;
 
-import static java.util.Objects.requireNonNull;
+import pl.kmalski.verification.domain.exception.InvalidVerificationException;
+
+import static pl.kmalski.verification.domain.validation.VerificationValidator.requireNonNull;
 
 public record VerificationCheckResult(VerificationCheckType type,
                                       VerificationCheckStatus status,
                                       String reason) {
 
     public VerificationCheckResult {
-        requireNonNull(type);
-        requireNonNull(status);
-        requireNonNull(reason);
+        requireNonNull(type, "Type");
+        requireNonNull(status, "Status");
+        requireNonNull(reason, "Reason");
 
         if (reason.isBlank()) {
-            throw new IllegalArgumentException("Reason cannot be empty");
+            throw new InvalidVerificationException("Reason cannot be empty");
         }
     }
 

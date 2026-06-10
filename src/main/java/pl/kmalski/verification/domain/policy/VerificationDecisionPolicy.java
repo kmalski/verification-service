@@ -7,12 +7,12 @@ import pl.kmalski.verification.domain.model.VerificationDecision;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.requireNonNull;
+import static pl.kmalski.verification.domain.validation.VerificationValidator.requireNonNull;
 
 public class VerificationDecisionPolicy {
 
     public VerificationDecision decide(List<VerificationCheckResult> checkResults) {
-        requireNonNull(checkResults);
+        requireNonNull(checkResults, "Check results");
 
         var uniqueStatues = checkResults.stream()
                 .map(VerificationCheckResult::status)

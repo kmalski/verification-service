@@ -10,10 +10,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class AmountTests {
 
     @Test
-    void shouldExposeAmountValue() {
-        var amount = new Amount(new BigDecimal("12.50"));
-
-        assertThat(amount.value()).isEqualTo("12.50");
+    void shouldRejectNullAmount() {
+        assertThatThrownBy(() -> new Amount(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Amount cannot be null");
     }
 
     @Test

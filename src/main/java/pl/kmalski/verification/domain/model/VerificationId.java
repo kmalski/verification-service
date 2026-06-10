@@ -4,12 +4,12 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.UUID;
 
-import static java.util.Objects.requireNonNull;
+import static pl.kmalski.verification.domain.validation.VerificationValidator.requireNonNull;
 
 public record VerificationId(UUID value) {
 
     public VerificationId {
-        requireNonNull(value);
+        requireNonNull(value, "Verification id");
     }
 
     public static VerificationId random() {
