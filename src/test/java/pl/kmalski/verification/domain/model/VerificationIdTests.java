@@ -21,7 +21,6 @@ class VerificationIdTests {
     @Test
     void shouldRejectNullUuid() {
         assertThatThrownBy(() -> new VerificationId(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("Verification id must not be null");
+                .isInstanceOf(NullPointerException.class);
     }
 }

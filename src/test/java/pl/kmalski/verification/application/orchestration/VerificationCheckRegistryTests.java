@@ -1,9 +1,6 @@
 package pl.kmalski.verification.application.orchestration;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kmalski.verification.application.port.VerificationConfiguration;
 import pl.kmalski.verification.application.strategy.check.VerificationCheck;
 import pl.kmalski.verification.domain.model.VerificationCheckType;

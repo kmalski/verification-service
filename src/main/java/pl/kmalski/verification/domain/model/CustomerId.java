@@ -2,24 +2,20 @@ package pl.kmalski.verification.domain.model;
 
 import org.jspecify.annotations.NonNull;
 
-import java.util.UUID;
+import java.util.random.RandomGenerator;
 
 import static java.util.Objects.requireNonNull;
 
-public record VerificationId(UUID value) {
+public record CustomerId(String value) {
 
-    public VerificationId {
+    public CustomerId {
         requireNonNull(value);
-    }
-
-    public static VerificationId random() {
-        return new VerificationId(UUID.randomUUID());
     }
 
     @NonNull
     @Override
     public String toString() {
-        return value.toString();
+        return value;
     }
 
 }

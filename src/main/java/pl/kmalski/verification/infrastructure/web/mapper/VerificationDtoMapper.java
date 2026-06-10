@@ -6,7 +6,12 @@ import pl.kmalski.verification.application.usecase.getverification.GetVerificati
 import pl.kmalski.verification.application.usecase.getverification.GetVerificationResult.VerificationCheckResult;
 import pl.kmalski.verification.application.usecase.startverification.StartVerificationCommand;
 import pl.kmalski.verification.application.usecase.startverification.StartVerificationResult;
+import pl.kmalski.verification.domain.model.Amount;
+import pl.kmalski.verification.domain.model.Country;
+import pl.kmalski.verification.domain.model.Currency;
 import pl.kmalski.verification.domain.model.PaymentData;
+import pl.kmalski.verification.domain.model.PaymentId;
+import pl.kmalski.verification.domain.model.CustomerId;
 import pl.kmalski.verification.domain.model.VerificationId;
 import pl.kmalski.verification.infrastructure.web.dto.GetVerificationResponse;
 import pl.kmalski.verification.infrastructure.web.dto.GetVerificationResponse.VerificationCheckResponse;
@@ -21,17 +26,17 @@ public class VerificationDtoMapper {
     public StartVerificationCommand toStartVerificationCommand(StartVerificationRequest request) {
         var payment = request.payment();
         var paymentData = new PaymentData(
-                payment.paymentId(),
-                payment.customerId(),
-                payment.amount(),
-                payment.currency(),
-                payment.country()
+                new PaymentId(payment.paymentId()),
+                new CustomerId(payment.customerId()),
+                new Amount(payment.amount()),
+                new Currency(payment.currency()),
+                new Country(payment.country())
         );
         return new StartVerificationCommand(paymentData);
     }
 
     public StartVerificationResponse toStartVerificationResponse(StartVerificationResult result) {
-        return new StartVerificationResponse(result.verificationId(), result.status());
+        return new StartVerificationResponse(result.verificationId().value(), result.status());
     }
 
     public GetVerificationQuery toGetVerificationQuery(UUID verificationId) {
@@ -40,7 +45,7 @@ public class VerificationDtoMapper {
 
     public GetVerificationResponse toGetVerificationResponse(GetVerificationResult result) {
         return new GetVerificationResponse(
-                result.verificationId().id(),
+                result.verificationId().value(),
                 result.status(),
                 result.decision(),
                 result.checkResults().stream()

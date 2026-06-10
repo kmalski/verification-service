@@ -33,22 +33,22 @@ class VerificationDtoMapperTests {
         var command = mapper.toStartVerificationCommand(request);
 
         assertThat(command.payment()).isEqualTo(new PaymentData(
-                "payment-1",
-                "customer-1",
-                new BigDecimal("10.00"),
-                "PLN",
-                "PL"
+                new PaymentId("payment-1"),
+                new CustomerId("customer-1"),
+                new Amount(new BigDecimal("10.00")),
+                new Currency("PLN"),
+                new Country("PL")
         ));
     }
 
     @Test
     void shouldMapStartResultToResponse() {
         var verificationId = VerificationId.random();
-        var result = new StartVerificationResult(verificationId.id(), VerificationStatus.QUEUED);
+        var result = new StartVerificationResult(verificationId, VerificationStatus.QUEUED);
 
         var response = mapper.toStartVerificationResponse(result);
 
-        assertThat(response.verificationId()).isEqualTo(verificationId.id());
+        assertThat(response.verificationId()).isEqualTo(verificationId.value());
         assertThat(response.status()).isEqualTo(VerificationStatus.QUEUED);
     }
 
@@ -68,7 +68,7 @@ class VerificationDtoMapperTests {
 
         var response = mapper.toGetVerificationResponse(result);
 
-        assertThat(response.verificationId()).isEqualTo(verificationId.id());
+        assertThat(response.verificationId()).isEqualTo(verificationId.value());
         assertThat(response.status()).isEqualTo(VerificationStatus.COMPLETED);
         assertThat(response.decision()).isEqualTo(VerificationDecision.APPROVED);
         assertThat(response.checkResults()).containsExactly(

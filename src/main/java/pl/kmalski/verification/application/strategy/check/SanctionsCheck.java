@@ -22,7 +22,7 @@ public class SanctionsCheck implements VerificationCheck {
 
     @Override
     public VerificationCheckResult execute(PaymentData payment) {
-        boolean isCountrySanctioned = sanctionsApi.isCountrySanctioned(payment.country());
+        boolean isCountrySanctioned = sanctionsApi.isCountrySanctioned(payment.country().value());
 
         return isCountrySanctioned
                 ? VerificationCheckResult.failed(SANCTIONS, "Sanctioned country")

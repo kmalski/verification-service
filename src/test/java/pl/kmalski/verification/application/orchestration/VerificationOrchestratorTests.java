@@ -7,9 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kmalski.verification.application.port.VerificationConfiguration;
 import pl.kmalski.verification.application.strategy.check.VerificationCheck;
-import pl.kmalski.verification.domain.model.PaymentData;
-import pl.kmalski.verification.domain.model.VerificationCheckResult;
-import pl.kmalski.verification.domain.model.VerificationCheckType;
+import pl.kmalski.verification.domain.model.*;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -54,11 +52,11 @@ class VerificationOrchestratorTests {
 
     private static PaymentData validPaymentData() {
         return new PaymentData(
-                "payment-1",
-                "customer-1",
-                new BigDecimal("10.00"),
-                "PLN",
-                "PL"
+                new PaymentId("payment-1"),
+                new CustomerId("customer-1"),
+                new Amount(new BigDecimal("10.00")),
+                new Currency("PLN"),
+                new Country("PL")
         );
     }
 }

@@ -2,18 +2,18 @@ package pl.kmalski.verification.domain.model;
 
 import org.jspecify.annotations.NonNull;
 
-import java.util.UUID;
+import java.math.BigDecimal;
 
 import static java.util.Objects.requireNonNull;
 
-public record VerificationId(UUID value) {
+public record Amount(BigDecimal value) {
 
-    public VerificationId {
+    public Amount {
         requireNonNull(value);
-    }
 
-    public static VerificationId random() {
-        return new VerificationId(UUID.randomUUID());
+        if (value.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Amount must be positive");
+        }
     }
 
     @NonNull

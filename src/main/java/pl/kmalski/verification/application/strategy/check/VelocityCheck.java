@@ -24,7 +24,7 @@ public class VelocityCheck implements VerificationCheck {
 
     @Override
     public VerificationCheckResult execute(PaymentData payment) {
-        int count = velocityApi.count(payment.customerId(), configuration.getVelocityWindow());
+        int count = velocityApi.count(payment.customerId().value(), configuration.getVelocityWindow());
 
         if (count > configuration.getVelocityLimit()) {
             return VerificationCheckResult.failed(VELOCITY, "High velocity");

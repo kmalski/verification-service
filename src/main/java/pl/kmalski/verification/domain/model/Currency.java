@@ -2,24 +2,22 @@ package pl.kmalski.verification.domain.model;
 
 import org.jspecify.annotations.NonNull;
 
-import java.util.UUID;
-
 import static java.util.Objects.requireNonNull;
 
-public record VerificationId(UUID value) {
+public record Currency(String value) {
 
-    public VerificationId {
+    public Currency {
         requireNonNull(value);
-    }
 
-    public static VerificationId random() {
-        return new VerificationId(UUID.randomUUID());
+        if (value.isBlank()) {
+            throw new IllegalArgumentException("Currency cannot be blank");
+        }
     }
 
     @NonNull
     @Override
     public String toString() {
-        return value.toString();
+        return value;
     }
 
 }

@@ -2,11 +2,9 @@ package pl.kmalski.verification.application.usecase.startverification;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.kmalski.verification.application.orchestration.VerificationOrchestrator;
 import pl.kmalski.verification.application.orchestration.VerificationWorkflow;
 import pl.kmalski.verification.application.port.VerificationRepository;
 import pl.kmalski.verification.domain.model.Verification;
-import pl.kmalski.verification.domain.policy.VerificationDecisionPolicy;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +21,7 @@ public class StartVerificationUseCase {
 
         workflow.start(verification.getId());
 
-        return new StartVerificationResult(verification.getId().id(), verification.getStatus());
+        return new StartVerificationResult(verification.getId(), verification.getStatus());
     }
 
 }

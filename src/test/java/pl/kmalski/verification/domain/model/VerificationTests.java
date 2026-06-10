@@ -114,11 +114,11 @@ class VerificationTests {
 
     private static PaymentData validPaymentData() {
         return new PaymentData(
-                "payment-1",
-                "customer-1",
-                new BigDecimal("10.00"),
-                "PLN",
-                "PL"
+                new PaymentId("payment-1"),
+                new CustomerId("customer-1"),
+                new Amount(new BigDecimal("12.50")),
+                new Currency("PLN"),
+                new Country("PL")
         );
     }
 }

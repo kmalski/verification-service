@@ -7,13 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kmalski.verification.application.orchestration.VerificationWorkflow;
 import pl.kmalski.verification.application.port.VerificationRepository;
-import pl.kmalski.verification.domain.model.PaymentData;
-import pl.kmalski.verification.domain.model.Verification;
-import pl.kmalski.verification.domain.model.VerificationId;
-import pl.kmalski.verification.domain.model.VerificationStatus;
+import pl.kmalski.verification.domain.model.*;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -38,23 +34,23 @@ class StartVerificationUseCaseTests {
         var result = useCase.start(command);
 
         then(repository).should().save(argThat(savedVerification ->
-                savedVerification.getId().id().equals(result.verificationId())
+                savedVerification.getId().equals(result.verificationId())
                         && savedVerification.getPayment().equals(command.payment())
                         && savedVerification.getStatus() == VerificationStatus.QUEUED
         ));
-        then(workflow).should().start(new VerificationId(result.verificationId()));
+        then(workflow).should().start(result.verificationId());
 
-        assertThat(result.verificationId()).isInstanceOf(UUID.class);
+        assertThat(result.verificationId()).isNotNull();
         assertThat(result.status()).isEqualTo(VerificationStatus.QUEUED);
     }
 
     private static PaymentData validPaymentData() {
         return new PaymentData(
-                "payment-1",
-                "customer-1",
-                new BigDecimal("10.00"),
-                "PLN",
-                "PL"
+                new PaymentId("payment-1"),
+                new CustomerId("customer-1"),
+                new Amount(new BigDecimal("10.00")),
+                new Currency("PLN"),
+                new Country("PL")
         );
     }
 }

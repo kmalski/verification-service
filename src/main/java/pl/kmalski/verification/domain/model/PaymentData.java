@@ -1,14 +1,12 @@
 package pl.kmalski.verification.domain.model;
 
-import java.math.BigDecimal;
-
 import static java.util.Objects.requireNonNull;
 
-public record PaymentData(String paymentId,
-                          String customerId,
-                          BigDecimal amount,
-                          String currency,
-                          String country) {
+public record PaymentData(PaymentId paymentId,
+                          CustomerId customerId,
+                          Amount amount,
+                          Currency currency,
+                          Country country) {
 
     public PaymentData {
         requireNonNull(paymentId);
@@ -16,10 +14,6 @@ public record PaymentData(String paymentId,
         requireNonNull(amount);
         requireNonNull(currency);
         requireNonNull(country);
-
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Payment amount must be positive");
-        }
     }
 
 }
