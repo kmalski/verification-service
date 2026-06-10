@@ -1,7 +1,20 @@
 package pl.kmalski.verification.infrastructure.web.dto;
 
-import lombok.Builder;
+import pl.kmalski.verification.domain.model.VerificationCheckStatus;
+import pl.kmalski.verification.domain.model.VerificationCheckType;
+import pl.kmalski.verification.domain.model.VerificationDecision;
+import pl.kmalski.verification.domain.model.VerificationStatus;
 
-@Builder
-public record GetVerificationResponse() {
+import java.util.List;
+import java.util.UUID;
+
+public record GetVerificationResponse(UUID verificationId,
+                                      VerificationStatus status,
+                                      VerificationDecision decision,
+                                      List<VerificationCheckResponse> checkResults) {
+
+    public record VerificationCheckResponse(VerificationCheckType type,
+                                            VerificationCheckStatus status,
+                                            String reason) {}
+
 }

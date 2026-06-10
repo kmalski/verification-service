@@ -23,7 +23,7 @@ public class StartVerificationUseCase {
 
         workflow.start(verification.getId());
 
-        return new StartVerificationResult(verification.getId());
+        return new StartVerificationResult(verification.getId().id(), verification.getStatus());
     }
 
 }

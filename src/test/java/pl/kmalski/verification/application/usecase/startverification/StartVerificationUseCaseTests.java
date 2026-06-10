@@ -9,9 +9,11 @@ import pl.kmalski.verification.application.orchestration.VerificationWorkflow;
 import pl.kmalski.verification.application.port.VerificationRepository;
 import pl.kmalski.verification.domain.model.PaymentData;
 import pl.kmalski.verification.domain.model.Verification;
+import pl.kmalski.verification.domain.model.VerificationId;
 import pl.kmalski.verification.domain.model.VerificationStatus;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -36,13 +38,14 @@ class StartVerificationUseCaseTests {
         var result = useCase.start(command);
 
         then(repository).should().save(argThat(savedVerification ->
-                savedVerification.getId().equals(result.verificationId())
+                savedVerification.getId().id().equals(result.verificationId())
                         && savedVerification.getPayment().equals(command.payment())
                         && savedVerification.getStatus() == VerificationStatus.QUEUED
         ));
-        then(workflow).should().start(result.verificationId());
+        then(workflow).should().start(new VerificationId(result.verificationId()));
 
-        assertThat(result.verificationId()).isNotNull();
+        assertThat(result.verificationId()).isInstanceOf(UUID.class);
+        assertThat(result.status()).isEqualTo(VerificationStatus.QUEUED);
     }
 
     private static PaymentData validPaymentData() {

@@ -1,7 +1,8 @@
 package pl.kmalski.verification.infrastructure.web.dto;
 
-import lombok.Builder;
+import pl.kmalski.verification.domain.model.VerificationStatus;
 
-@Builder
-public record StartVerificationResponse() {
-}
+import java.util.UUID;
+
+public record StartVerificationResponse(UUID verificationId,
+                                        VerificationStatus status) {}
