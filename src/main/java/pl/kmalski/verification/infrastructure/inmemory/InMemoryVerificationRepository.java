@@ -1,4 +1,4 @@
-package pl.kmalski.verification.infrastructure.persistence;
+package pl.kmalski.verification.infrastructure.inmemory;
 
 import org.springframework.stereotype.Repository;
 import pl.kmalski.verification.domain.model.Verification;

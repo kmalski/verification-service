@@ -9,7 +9,7 @@ import static java.util.Objects.requireNonNull;
 public record GetVerificationQuery(VerificationId verificationId) {
 
     public GetVerificationQuery {
-        requireNonNull(verificationId, "Verification id must not be null");
+        requireNonNull(verificationId);
     }
 
 }

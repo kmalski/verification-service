@@ -8,6 +8,6 @@ public interface VerificationCheck {
 
     VerificationCheckType type();
 
-    VerificationCheckResult execute(PaymentData paymentData);
+    VerificationCheckResult execute(PaymentData payment);
 
 }

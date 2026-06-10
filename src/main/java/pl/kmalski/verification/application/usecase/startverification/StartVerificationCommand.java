@@ -1,15 +1,15 @@
 package pl.kmalski.verification.application.usecase.startverification;
 
 import lombok.Builder;
-import pl.kmalski.verification.domain.model.PaymentId;
+import pl.kmalski.verification.domain.model.PaymentData;
 
 import static java.util.Objects.requireNonNull;
 
 @Builder
-public record StartVerificationCommand(PaymentId paymentId) {
+public record StartVerificationCommand(PaymentData payment) {
 
     public StartVerificationCommand {
-        requireNonNull(paymentId, "Payment id must not be null");
+        requireNonNull(payment);
     }
 
 }

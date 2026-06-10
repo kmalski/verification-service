@@ -9,14 +9,15 @@ import pl.kmalski.verification.domain.exception.VerificationNotFound;
 @RequiredArgsConstructor
 public class GetVerificationUseCase {
 
-    private final VerificationRepository verificationRepository;
+    private final VerificationRepository repository;
 
     public GetVerificationResult get(GetVerificationQuery query) {
-        var verification = verificationRepository.findById(query.verificationId())
-                .orElseThrow(() -> new VerificationNotFound(query.verificationId()));
+        var verificationId = query.verificationId();
 
-        return GetVerificationResult.builder()
-                .build();
+        var verification = repository.findById(verificationId)
+                .orElseThrow(() -> new VerificationNotFound(verificationId));
+
+        return new GetVerificationResult();
     }
 
 }
