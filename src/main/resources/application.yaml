@@ -1,6 +1,9 @@
 spring:
   application:
     name: 'verification-service'
+  threads:
+    virtual:
+      enabled: true
 
 verification:
   check:

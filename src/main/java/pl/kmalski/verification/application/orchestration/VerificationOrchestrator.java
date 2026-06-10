@@ -25,17 +25,24 @@ public class VerificationOrchestrator {
 
     public List<VerificationCheckResult> execute(PaymentData payment) {
         try (var scope = StructuredTaskScope.open(allSuccessfulOrThrow(), config())) {
-            var tasks = checkRegistry.getEnabledVerificationChecks().stream()
+            var checks = checkRegistry.getEnabledVerificationChecks();
+            log.debug("Running {} verification checks for payment {}", checks.size(), payment.paymentId());
+
+            var tasks = checks.stream()
                     .map(check -> scope.fork(() -> check.execute(payment)))
                     .toList();
 
             scope.join();
 
-            return tasks.stream()
+            var results = tasks.stream()
                     .map(Subtask::get)
                     .toList();
+
+            log.debug("Completed verification checks for payment {} with {} results", payment.paymentId(), results.size());
+            return results;
         } catch (InterruptedException exc) {
             Thread.currentThread().interrupt();
+            log.warn("Verification checks interrupted for payment {}", payment.paymentId(), exc);
             throw new IllegalStateException("Running verification checks interrupted", exc);
         }
     }

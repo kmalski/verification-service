@@ -1,12 +1,14 @@
 package pl.kmalski.verification.application.usecase.getverification;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.kmalski.verification.application.port.VerificationRepository;
 import pl.kmalski.verification.application.usecase.getverification.GetVerificationResult.VerificationCheckResult;
 import pl.kmalski.verification.domain.exception.VerificationNotFound;
 import pl.kmalski.verification.domain.model.Verification;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GetVerificationUseCase {
@@ -16,9 +18,11 @@ public class GetVerificationUseCase {
     public GetVerificationResult get(GetVerificationQuery query) {
         var verificationId = query.verificationId();
 
+        log.debug("Fetching verification {}", verificationId);
         var verification = repository.findById(verificationId)
                 .orElseThrow(() -> new VerificationNotFound(verificationId));
 
+        log.debug("Verification {} loaded with status {}", verificationId, verification.getStatus());
         return new GetVerificationResult(
                 verification.getId(),
                 verification.getStatus(),

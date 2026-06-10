@@ -28,6 +28,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
 
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testImplementation("com.tngtech.archunit:archunit:1.4.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

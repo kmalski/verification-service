@@ -71,7 +71,7 @@ class VerificationDtoMapperTests {
         assertThat(response.verificationId()).isEqualTo(verificationId.value());
         assertThat(response.status()).isEqualTo(VerificationStatus.COMPLETED);
         assertThat(response.decision()).isEqualTo(VerificationDecision.APPROVED);
-        assertThat(response.checkResults()).containsExactly(
+        assertThat(response.checks()).containsExactly(
                 new VerificationCheckResponse(
                         VerificationCheckType.FRAUD,
                         VerificationCheckStatus.PASSED,

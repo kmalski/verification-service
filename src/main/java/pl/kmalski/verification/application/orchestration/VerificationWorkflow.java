@@ -23,6 +23,7 @@ public class VerificationWorkflow {
         var verification = repository.findById(verificationId)
                 .orElseThrow(() -> new IllegalStateException("Could not find verification with id " + verificationId));
 
+        log.info("Starting workflow for verification {}", verificationId);
         verification.markInProgress();
         repository.save(verification);
 
@@ -32,9 +33,11 @@ public class VerificationWorkflow {
 
             verification.complete(decision, results);
             repository.save(verification);
+            log.info("Verification {} completed with decision {}", verificationId, decision);
         } catch (Exception exc) {
             verification.markFailed(exc.getMessage());
             repository.save(verification);
+            log.error("Verification {} failed", verificationId, exc);
         }
     }
 
