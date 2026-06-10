@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import pl.kmalski.verification.application.port.VerificationRepository;
-import pl.kmalski.verification.domain.model.Verification;
 import pl.kmalski.verification.domain.model.VerificationId;
 import pl.kmalski.verification.domain.policy.VerificationDecisionPolicy;
 

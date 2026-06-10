@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Validated
 @ConfigurationProperties(prefix = "verification")
-public record VerificationProperties(@Valid @NotNull CheckProperties check) implements VerificationConfiguration {
+record VerificationProperties(@Valid @NotNull CheckProperties check) implements VerificationConfiguration {
 
     @Override
     public Duration getVerificationCheckTimeout() {

@@ -1,18 +1,17 @@
-package pl.kmalski.verification.infrastructure.web.mapper;
+package pl.kmalski.verification.infrastructure.web;
 
 import org.junit.jupiter.api.Test;
 import pl.kmalski.verification.application.usecase.getverification.GetVerificationResult;
 import pl.kmalski.verification.application.usecase.getverification.GetVerificationResult.VerificationCheckResult;
 import pl.kmalski.verification.application.usecase.startverification.StartVerificationResult;
 import pl.kmalski.verification.domain.model.*;
-import pl.kmalski.verification.infrastructure.web.dto.StartVerificationRequest;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static pl.kmalski.verification.infrastructure.web.dto.GetVerificationResponse.VerificationCheckResponse;
+import static pl.kmalski.verification.infrastructure.web.GetVerificationResponse.VerificationCheckResponse;
 
 class VerificationDtoMapperTests {
 

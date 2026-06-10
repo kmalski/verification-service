@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-public class InMemoryVerificationRepository implements VerificationRepository {
+class InMemoryVerificationRepository implements VerificationRepository {
 
     private final Map<VerificationId, Verification> store = new ConcurrentHashMap<>();
 

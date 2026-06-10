@@ -5,4 +5,4 @@ import org.springframework.context.annotation.Configuration;
 
 @EnableConfigurationProperties(VerificationProperties.class)
 @Configuration(proxyBeanMethods = false)
-public class PropertiesConfiguration {}
+class PropertiesConfiguration {}

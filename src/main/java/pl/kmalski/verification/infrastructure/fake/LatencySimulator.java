@@ -1,10 +1,13 @@
 package pl.kmalski.verification.infrastructure.fake;
 
+import org.springframework.stereotype.Component;
+
 import java.util.random.RandomGenerator;
 
+@Component
 class LatencySimulator {
 
-    public static void simulateLatency() {
+    public void simulateLatency() {
         try {
             var millis = RandomGenerator.getDefault().nextLong(500, 1500);
             Thread.sleep(millis);

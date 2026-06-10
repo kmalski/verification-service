@@ -14,7 +14,7 @@ import pl.kmalski.verification.domain.exception.VerificationNotFoundException;
 
 @Slf4j
 @RestControllerAdvice
-public class VerificationExceptionHandler {
+class VerificationExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleInternalServerError(Exception exception,

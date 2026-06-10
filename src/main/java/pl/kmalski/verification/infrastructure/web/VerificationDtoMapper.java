@@ -1,4 +1,4 @@
-package pl.kmalski.verification.infrastructure.web.mapper;
+package pl.kmalski.verification.infrastructure.web;
 
 import org.springframework.stereotype.Component;
 import pl.kmalski.verification.application.usecase.getverification.GetVerificationQuery;
@@ -6,22 +6,13 @@ import pl.kmalski.verification.application.usecase.getverification.GetVerificati
 import pl.kmalski.verification.application.usecase.getverification.GetVerificationResult.VerificationCheckResult;
 import pl.kmalski.verification.application.usecase.startverification.StartVerificationCommand;
 import pl.kmalski.verification.application.usecase.startverification.StartVerificationResult;
-import pl.kmalski.verification.domain.model.Amount;
-import pl.kmalski.verification.domain.model.Country;
-import pl.kmalski.verification.domain.model.Currency;
-import pl.kmalski.verification.domain.model.PaymentData;
-import pl.kmalski.verification.domain.model.PaymentId;
-import pl.kmalski.verification.domain.model.CustomerId;
-import pl.kmalski.verification.domain.model.VerificationId;
-import pl.kmalski.verification.infrastructure.web.dto.GetVerificationResponse;
-import pl.kmalski.verification.infrastructure.web.dto.GetVerificationResponse.VerificationCheckResponse;
-import pl.kmalski.verification.infrastructure.web.dto.StartVerificationRequest;
-import pl.kmalski.verification.infrastructure.web.dto.StartVerificationResponse;
+import pl.kmalski.verification.domain.model.*;
+import pl.kmalski.verification.infrastructure.web.GetVerificationResponse.VerificationCheckResponse;
 
 import java.util.UUID;
 
 @Component
-public class VerificationDtoMapper {
+class VerificationDtoMapper {
 
     public StartVerificationCommand toStartVerificationCommand(StartVerificationRequest request) {
         var payment = request.payment();

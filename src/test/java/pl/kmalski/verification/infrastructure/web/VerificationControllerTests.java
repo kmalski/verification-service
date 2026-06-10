@@ -15,7 +15,6 @@ import pl.kmalski.verification.application.usecase.startverification.StartVerifi
 import pl.kmalski.verification.application.usecase.startverification.StartVerificationUseCase;
 import pl.kmalski.verification.domain.exception.VerificationNotFoundException;
 import pl.kmalski.verification.domain.model.*;
-import pl.kmalski.verification.infrastructure.web.mapper.VerificationDtoMapper;
 
 import java.math.BigDecimal;
 import java.util.List;

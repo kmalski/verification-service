@@ -8,17 +8,16 @@ import pl.kmalski.verification.application.port.VerificationConfiguration;
 import java.time.Duration;
 import java.util.random.RandomGenerator;
 
-import static pl.kmalski.verification.infrastructure.fake.LatencySimulator.simulateLatency;
-
 @Component
 @RequiredArgsConstructor
-public class FakeVelocityApi implements VelocityApi {
+class FakeVelocityApi implements VelocityApi {
 
     private final VerificationConfiguration configuration;
+    private final LatencySimulator latencySimulator;
 
     @Override
     public int count(String customerId, Duration window) {
-        simulateLatency();
+        latencySimulator.simulateLatency();
 
         var velocityLimit = configuration.getVelocityLimit();
 
