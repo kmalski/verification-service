@@ -3,10 +3,10 @@
 ## Project Structure & Module Organization
 
 This is a Gradle-based Spring Boot application named `verification-service`. Production code lives under
-`src/main/java/pl/kmalski/vo`, with the application entry point in `VerificationApplication.java`.
+`src/main/java/pl/kmalski/verification`, with the application entry point in `VerificationApplication.java`.
 Configuration files belong in `src/main/resources`; the current application name is configured in `application.yaml`.
-Tests mirror the main package structure under `src/test/java/pl/kmalski/vo`. Generated build output is written to
-`build/` and should not be edited or committed.
+Tests mirror the main package structure under `src/test/java/pl/kmalski/verification`. Generated build output is written
+to `build/` and should not be edited or committed.
 
 ## Build, Test, and Development Commands
 
@@ -21,11 +21,11 @@ The project uses Java 25 via the Gradle toolchain. Ensure that a compatible JDK 
 
 ## Coding Style & Naming Conventions
 
-Use Java package names under `pl.kmalski.verification`. Keep classes focused on one responsibility and name Spring components by
-role, for example `VerificationController`, `VerificationService`, or `ProviderClient`. Use 4-space indentation in Java
-files. Prefer constructor injection for Spring dependencies. Keep configuration in YAML under `src/main/resources` and
-use kebab-case for property names. Lombok is available as a compile-only dependency; use it sparingly and only where it
-removes routine boilerplate without hiding important behavior.
+Use Java package names under `pl.kmalski.verification`. Keep classes focused on one responsibility and name Spring
+components by role, for example `VerificationController`, `VerificationService`, or `ProviderClient`. Use 4-space
+indentation in Java files. Prefer constructor injection for Spring dependencies. Keep configuration in YAML under
+`src/main/resources` and use kebab-case for property names. Lombok is available as a compile-only dependency; use it
+sparingly and only where it removes routine boilerplate without hiding important behavior.
 
 ## Testing Guidelines
 
