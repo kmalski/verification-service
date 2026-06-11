@@ -1,5 +1,6 @@
 package pl.kmalski.verification.infrastructure.web;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import pl.kmalski.verification.application.usecase.getverification.GetVerificationUseCase;
@@ -17,7 +18,7 @@ class VerificationController {
     private final VerificationDtoMapper verificationDtoMapper;
 
     @PostMapping
-    public StartVerificationResponse startVerification(@RequestBody StartVerificationRequest request) {
+    public StartVerificationResponse startVerification(@Valid @RequestBody StartVerificationRequest request) {
         var command = verificationDtoMapper.toStartVerificationCommand(request);
         var result = startVerificationUseCase.start(command);
         return verificationDtoMapper.toStartVerificationResponse(result);

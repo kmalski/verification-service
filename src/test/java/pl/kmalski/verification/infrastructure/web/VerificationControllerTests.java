@@ -19,6 +19,7 @@ import pl.kmalski.verification.domain.model.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -116,7 +117,82 @@ class VerificationControllerTests {
                                 """))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Bad request"))
-                .andExpect(jsonPath("$.detail").value("Country must be a valid ISO 3166-1 alpha-2 code"))
+                .andExpect(jsonPath("$.detail").value("payment.country: Country must be a valid ISO 3166-1 alpha-2 code"))
+                .andExpect(jsonPath("$.instance").value("/verifications"));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenPaymentIsMissing() throws Exception {
+        mockMvc.perform(post("/verifications")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Bad request"))
+                .andExpect(jsonPath("$.detail").value("payment: must not be null"))
+                .andExpect(jsonPath("$.instance").value("/verifications"));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenRequestBodyContainsBlankIdentifiers() throws Exception {
+        mockMvc.perform(post("/verifications")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "payment": {
+                                    "paymentId": " ",
+                                    "customerId": "",
+                                    "amount": 10.00,
+                                    "currency": "PLN",
+                                    "country": "PL"
+                                  }
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Bad request"))
+                .andExpect(jsonPath("$.detail").value(containsString("payment.customerId: must not be blank")))
+                .andExpect(jsonPath("$.detail").value(containsString("payment.paymentId: must not be blank")))
+                .andExpect(jsonPath("$.instance").value("/verifications"));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenRequestBodyContainsNonPositiveAmount() throws Exception {
+        mockMvc.perform(post("/verifications")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "payment": {
+                                    "paymentId": "payment-1",
+                                    "customerId": "customer-1",
+                                    "amount": 0,
+                                    "currency": "PLN",
+                                    "country": "PL"
+                                  }
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Bad request"))
+                .andExpect(jsonPath("$.detail").value("payment.amount: must be greater than 0"))
+                .andExpect(jsonPath("$.instance").value("/verifications"));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenRequestBodyContainsInvalidCurrency() throws Exception {
+        mockMvc.perform(post("/verifications")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "payment": {
+                                    "paymentId": "payment-1",
+                                    "customerId": "customer-1",
+                                    "amount": 10.00,
+                                    "currency": "PLNN",
+                                    "country": "PL"
+                                  }
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Bad request"))
+                .andExpect(jsonPath("$.detail").value("payment.currency: Currency must be a valid ISO 4217 code"))
                 .andExpect(jsonPath("$.instance").value("/verifications"));
     }
 
@@ -132,7 +208,6 @@ class VerificationControllerTests {
                 .andExpect(jsonPath("$.detail").value("Verification with id " + verificationId + " not found"))
                 .andExpect(jsonPath("$.instance").value("/verifications/" + verificationId));
     }
-
 
     @Test
     void shouldReturnInternalServerErrorWhenUseCaseThrowsUnexpectedException() throws Exception {

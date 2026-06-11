@@ -34,10 +34,14 @@ public class VerificationWorkflow {
             repository.save(verification);
             log.info("Verification {} completed with decision {}", verificationId, decision);
         } catch (Exception exc) {
-            verification.markFailed(exc.getMessage());
+            verification.markFailed(failureReason(exc));
             repository.save(verification);
             log.error("Verification {} failed", verificationId, exc);
         }
+    }
+
+    private String failureReason(Exception exc) {
+        return exc.getMessage() != null ? exc.getMessage() : exc.getClass().getSimpleName();
     }
 
 }
