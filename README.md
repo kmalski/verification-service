@@ -15,7 +15,7 @@ Implemented checks:
 - Java 25 with preview features enabled
 - Spring Boot 4
 - Gradle
-- JUnit 5
+- JUnit 6
 - ArchUnit
 
 ## Running locally
