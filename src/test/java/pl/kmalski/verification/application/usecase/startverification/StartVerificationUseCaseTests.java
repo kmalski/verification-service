@@ -6,20 +6,22 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kmalski.verification.application.orchestration.VerificationWorkflow;
-import pl.kmalski.verification.application.port.VerificationRepository;
+import pl.kmalski.verification.application.port.VerificationRegistrationService;
 import pl.kmalski.verification.domain.model.*;
 
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class StartVerificationUseCaseTests {
 
     @Mock
-    private VerificationRepository repository;
+    private VerificationRegistrationService registrationService;
 
     @Mock
     private VerificationWorkflow workflow;
@@ -31,17 +33,35 @@ class StartVerificationUseCaseTests {
     void shouldCreateStoreAndStartVerification() {
         var command = new StartVerificationCommand(validPaymentData());
 
+        given(registrationService.registerForPayment(command.payment()))
+                .willAnswer(invocation -> new VerificationRegistrationService.VerificationRegistration(
+                        Verification.start(invocation.getArgument(0)),
+                        true
+                ));
+
         var result = useCase.start(command);
 
-        then(repository).should().save(argThat(savedVerification ->
-                savedVerification.getId().equals(result.verificationId())
-                        && savedVerification.getPayment().equals(command.payment())
-                        && savedVerification.getStatus() == VerificationStatus.QUEUED
-        ));
+        then(registrationService).should().registerForPayment(command.payment());
         then(workflow).should().start(result.verificationId());
 
         assertThat(result.verificationId()).isNotNull();
         assertThat(result.status()).isEqualTo(VerificationStatus.QUEUED);
+    }
+
+    @Test
+    void shouldReturnExistingVerificationWithoutStartingWorkflowForDuplicatePayment() {
+        var command = new StartVerificationCommand(validPaymentData());
+        var existingVerification = Verification.start(validPaymentData());
+
+        given(registrationService.registerForPayment(command.payment()))
+                .willReturn(new VerificationRegistrationService.VerificationRegistration(existingVerification, false));
+
+        var result = useCase.start(command);
+
+        then(workflow).should(never()).start(any());
+
+        assertThat(result.verificationId()).isEqualTo(existingVerification.getId());
+        assertThat(result.status()).isEqualTo(existingVerification.getStatus());
     }
 
     private static PaymentData validPaymentData() {

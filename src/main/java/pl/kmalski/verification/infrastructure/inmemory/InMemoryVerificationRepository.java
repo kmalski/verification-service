@@ -1,27 +1,27 @@
 package pl.kmalski.verification.infrastructure.inmemory;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import pl.kmalski.verification.application.port.VerificationRepository;
 import pl.kmalski.verification.domain.model.Verification;
 import pl.kmalski.verification.domain.model.VerificationId;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
+@RequiredArgsConstructor
 class InMemoryVerificationRepository implements VerificationRepository {
 
-    private final Map<VerificationId, Verification> store = new ConcurrentHashMap<>();
+    private final InMemoryVerificationStore store;
 
     @Override
     public Optional<Verification> findById(VerificationId verificationId) {
-        return Optional.ofNullable(store.get(verificationId));
+        return store.findById(verificationId);
     }
 
     @Override
     public void save(Verification verification) {
-        store.put(verification.getId(), verification);
+        store.save(verification);
     }
 
 }

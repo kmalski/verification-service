@@ -1,6 +1,7 @@
 package pl.kmalski.verification.domain.model;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -9,8 +10,10 @@ import java.util.List;
 import static pl.kmalski.verification.domain.validation.VerificationValidator.requireNonNull;
 
 @Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Verification {
 
+    @EqualsAndHashCode.Include
     private final VerificationId id;
     private final PaymentData payment;
 
@@ -25,11 +28,13 @@ public class Verification {
                          PaymentData payment,
                          VerificationStatus status,
                          VerificationDecision decision,
+                         String failureReason,
                          List<VerificationCheckResult> checkResults) {
         this.id = requireNonNull(id, "Verification id");
         this.payment = requireNonNull(payment, "Payment");
         this.status = requireNonNull(status, "Status");
         this.decision = decision;
+        this.failureReason = failureReason;
         this.checkResults = requireNonNull(checkResults, "Check results");
     }
 
@@ -76,6 +81,10 @@ public class Verification {
 
     public List<VerificationCheckResult> getCheckResults() {
         return List.copyOf(checkResults);
+    }
+
+    public PaymentId getPaymentId() {
+        return payment.paymentId();
     }
 
     private IllegalStateException cannotTransitionTo(VerificationStatus to) {
