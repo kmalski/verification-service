@@ -2,11 +2,12 @@ package pl.kmalski.verification.infrastructure.web;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import pl.kmalski.verification.application.usecase.getverification.GetVerificationQuery;
 import pl.kmalski.verification.application.usecase.getverification.GetVerificationResult;
 import pl.kmalski.verification.application.usecase.getverification.GetVerificationUseCase;
@@ -19,21 +20,17 @@ import pl.kmalski.verification.domain.model.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@AutoConfigureRestTestClient
 @WebMvcTest(controllers = VerificationController.class)
 @Import({VerificationDtoMapper.class, VerificationExceptionHandler.class})
 class VerificationControllerTests {
 
     @Autowired
-    private MockMvc mockMvc;
+    private RestTestClient restClient;
 
     @MockitoBean
     private StartVerificationUseCase startVerificationUseCase;
@@ -42,7 +39,7 @@ class VerificationControllerTests {
     private GetVerificationUseCase getVerificationUseCase;
 
     @Test
-    void shouldStartVerification() throws Exception {
+    void shouldStartVerification() {
         var verificationId = VerificationId.random();
         var command = new StartVerificationCommand(new PaymentData(
                 new PaymentId("payment-1"),
@@ -55,26 +52,19 @@ class VerificationControllerTests {
 
         given(startVerificationUseCase.start(command)).willReturn(result);
 
-        mockMvc.perform(post("/verifications")
-                        .contentType("application/json")
-                        .content("""
-                                {
-                                  "payment": {
-                                    "paymentId": "payment-1",
-                                    "customerId": "customer-1",
-                                    "amount": 10.00,
-                                    "currency": "PLN",
-                                    "country": "PL"
-                                  }
-                                }
-                                """))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.verificationId").value(verificationId.value().toString()))
-                .andExpect(jsonPath("$.status").value("QUEUED"));
+        restClient.post()
+                .uri("/verifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(request())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.verificationId").isEqualTo(verificationId.value().toString())
+                .jsonPath("$.status").isEqualTo("QUEUED");
     }
 
     @Test
-    void shouldGetVerification() throws Exception {
+    void shouldGetVerification() {
         var verificationId = VerificationId.random();
         var query = new GetVerificationQuery(verificationId);
         var result = new GetVerificationResult(
@@ -90,146 +80,139 @@ class VerificationControllerTests {
 
         given(getVerificationUseCase.get(query)).willReturn(result);
 
-        mockMvc.perform(get("/verifications/{id}", verificationId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.verificationId").value(verificationId.toString()))
-                .andExpect(jsonPath("$.status").value("COMPLETED"))
-                .andExpect(jsonPath("$.decision").value("APPROVED"))
-                .andExpect(jsonPath("$.checks[0].type").value("FRAUD"))
-                .andExpect(jsonPath("$.checks[0].status").value("PASSED"))
-                .andExpect(jsonPath("$.checks[0].reason").value("Passed"));
+        restClient.get()
+                .uri("/verifications/{id}", verificationId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.verificationId").isEqualTo(verificationId.toString())
+                .jsonPath("$.status").isEqualTo("COMPLETED")
+                .jsonPath("$.decision").isEqualTo("APPROVED")
+                .jsonPath("$.checks[0].type").isEqualTo("FRAUD")
+                .jsonPath("$.checks[0].status").isEqualTo("PASSED")
+                .jsonPath("$.checks[0].reason").isEqualTo("Passed");
     }
 
     @Test
-    void shouldReturnBadRequestWhenRequestBodyContainsInvalidCountry() throws Exception {
-        mockMvc.perform(post("/verifications")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "payment": {
-                                    "paymentId": "payment-1",
-                                    "customerId": "customer-1",
-                                    "amount": 10.00,
-                                    "currency": "PLN",
-                                    "country": "Poland"
-                                  }
-                                }
-                                """))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value("Bad request"))
-                .andExpect(jsonPath("$.detail").value("payment.country: Country must be a valid ISO 3166-1 alpha-2 code"))
-                .andExpect(jsonPath("$.instance").value("/verifications"));
+    void shouldReturnBadRequestWhenRequestBodyContainsInvalidCountry() {
+        restClient.post()
+                .uri("/verifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(request("payment-1", "customer-1", "10.00", "PLN", "Poland"))
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.title").isEqualTo("Bad request")
+                .jsonPath("$.detail").isEqualTo("payment.country: Country must be a valid ISO 3166-1 alpha-2 code")
+                .jsonPath("$.instance").isEqualTo("/verifications");
     }
 
     @Test
-    void shouldReturnBadRequestWhenPaymentIsMissing() throws Exception {
-        mockMvc.perform(post("/verifications")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value("Bad request"))
-                .andExpect(jsonPath("$.detail").value("payment: must not be null"))
-                .andExpect(jsonPath("$.instance").value("/verifications"));
+    void shouldReturnBadRequestWhenPaymentIsMissing() {
+        restClient.post()
+                .uri("/verifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("{}")
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.title").isEqualTo("Bad request")
+                .jsonPath("$.detail").isEqualTo("payment: must not be null")
+                .jsonPath("$.instance").isEqualTo("/verifications");
     }
 
     @Test
-    void shouldReturnBadRequestWhenRequestBodyContainsBlankIdentifiers() throws Exception {
-        mockMvc.perform(post("/verifications")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "payment": {
-                                    "paymentId": " ",
-                                    "customerId": "",
-                                    "amount": 10.00,
-                                    "currency": "PLN",
-                                    "country": "PL"
-                                  }
-                                }
-                                """))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value("Bad request"))
-                .andExpect(jsonPath("$.detail").value(containsString("payment.customerId: must not be blank")))
-                .andExpect(jsonPath("$.detail").value(containsString("payment.paymentId: must not be blank")))
-                .andExpect(jsonPath("$.instance").value("/verifications"));
+    void shouldReturnBadRequestWhenRequestBodyContainsBlankIdentifiers() {
+        restClient.post()
+                .uri("/verifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(request(" ", "", "10.00", "PLN", "PL"))
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.title").isEqualTo("Bad request")
+                .jsonPath("$.detail").value((String detail) -> assertThat(detail)
+                        .contains("payment.customerId: must not be blank")
+                        .contains("payment.paymentId: must not be blank"))
+                .jsonPath("$.instance").isEqualTo("/verifications");
     }
 
     @Test
-    void shouldReturnBadRequestWhenRequestBodyContainsNonPositiveAmount() throws Exception {
-        mockMvc.perform(post("/verifications")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "payment": {
-                                    "paymentId": "payment-1",
-                                    "customerId": "customer-1",
-                                    "amount": 0,
-                                    "currency": "PLN",
-                                    "country": "PL"
-                                  }
-                                }
-                                """))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value("Bad request"))
-                .andExpect(jsonPath("$.detail").value("payment.amount: must be greater than 0"))
-                .andExpect(jsonPath("$.instance").value("/verifications"));
+    void shouldReturnBadRequestWhenRequestBodyContainsNonPositiveAmount() {
+        restClient.post()
+                .uri("/verifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(request("payment-1", "customer-1", "0", "PLN", "PL"))
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.title").isEqualTo("Bad request")
+                .jsonPath("$.detail").isEqualTo("payment.amount: must be greater than 0")
+                .jsonPath("$.instance").isEqualTo("/verifications");
     }
 
     @Test
-    void shouldReturnBadRequestWhenRequestBodyContainsInvalidCurrency() throws Exception {
-        mockMvc.perform(post("/verifications")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "payment": {
-                                    "paymentId": "payment-1",
-                                    "customerId": "customer-1",
-                                    "amount": 10.00,
-                                    "currency": "PLNN",
-                                    "country": "PL"
-                                  }
-                                }
-                                """))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value("Bad request"))
-                .andExpect(jsonPath("$.detail").value("payment.currency: Currency must be a valid ISO 4217 code"))
-                .andExpect(jsonPath("$.instance").value("/verifications"));
+    void shouldReturnBadRequestWhenRequestBodyContainsInvalidCurrency() {
+        restClient.post()
+                .uri("/verifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(request("payment-1", "customer-1", "10.00", "PLNN", "PL"))
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.title").isEqualTo("Bad request")
+                .jsonPath("$.detail").isEqualTo("payment.currency: Currency must be a valid ISO 4217 code")
+                .jsonPath("$.instance").isEqualTo("/verifications");
     }
 
     @Test
-    void shouldReturnNotFoundWhenVerificationIsMissing() throws Exception {
+    void shouldReturnNotFoundWhenVerificationIsMissing() {
         var verificationId = VerificationId.random();
-        when(getVerificationUseCase.get(any()))
-                .thenThrow(new VerificationNotFoundException(verificationId));
+        given(getVerificationUseCase.get(any()))
+                .willThrow(new VerificationNotFoundException(verificationId));
 
-        mockMvc.perform(get("/verifications/{id}", verificationId))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.title").value("Not found"))
-                .andExpect(jsonPath("$.detail").value("Verification with id " + verificationId + " not found"))
-                .andExpect(jsonPath("$.instance").value("/verifications/" + verificationId));
+        restClient.get()
+                .uri("/verifications/{id}", verificationId)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.title").isEqualTo("Not found")
+                .jsonPath("$.detail").isEqualTo("Verification with id " + verificationId + " not found")
+                .jsonPath("$.instance").isEqualTo("/verifications/" + verificationId);
     }
 
     @Test
-    void shouldReturnInternalServerErrorWhenUseCaseThrowsUnexpectedException() throws Exception {
-        when(startVerificationUseCase.start(any()))
-                .thenThrow(new IllegalStateException("boom"));
+    void shouldReturnInternalServerErrorWhenUseCaseThrowsUnexpectedException() {
+        given(startVerificationUseCase.start(any()))
+                .willThrow(new IllegalStateException("boom"));
 
-        mockMvc.perform(post("/verifications")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "payment": {
-                                    "paymentId": "payment-1",
-                                    "customerId": "customer-1",
-                                    "amount": 10.00,
-                                    "currency": "PLN",
-                                    "country": "PL"
-                                  }
-                                }
-                                """))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.title").value("Internal Server Error"))
-                .andExpect(jsonPath("$.instance").value("/verifications"));
+        restClient.post()
+                .uri("/verifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(request())
+                .exchange()
+                .expectStatus().is5xxServerError()
+                .expectBody()
+                .jsonPath("$.title").isEqualTo("Internal Server Error")
+                .jsonPath("$.instance").isEqualTo("/verifications");
+    }
+
+    private String request() {
+        return request("payment-1", "customer-1", "10.00", "PLN", "PL");
+    }
+
+    private String request(String paymentId, String customerId, String amount, String currency, String country) {
+        return """
+                {
+                  "payment": {
+                    "paymentId": "%s",
+                    "customerId": "%s",
+                    "amount": %s,
+                    "currency": "%s",
+                    "country": "%s"
+                  }
+                }
+                """.formatted(paymentId, customerId, amount, currency, country);
     }
 
 }

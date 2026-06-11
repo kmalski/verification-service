@@ -2,13 +2,16 @@ package pl.kmalski.verification;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.core.importer.ImportOption;
 import org.junit.jupiter.api.Test;
 
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
 class ArchitectureTest {
 
-    private final JavaClasses importedClasses = new ClassFileImporter().importPackages("pl.kmalski.verification");
+    private final JavaClasses importedClasses = new ClassFileImporter()
+            .withImportOption(new ImportOption.DoNotIncludeTests())
+            .importPackages("pl.kmalski.verification");
 
     @Test
     void shouldRespectLayeredArchitecture() {

@@ -3,12 +3,12 @@ package pl.kmalski.verification;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import pl.kmalski.verification.infrastructure.fake.NoOpLatencyConfiguration;
 
 import java.time.Duration;
@@ -16,15 +16,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.oneOf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+@AutoConfigureRestTestClient
 @TestPropertySource(properties = {
         "verification.check.enabled=FRAUD",
         "verification.check.timeout=3s",
@@ -35,45 +30,55 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class VerificationIntegrationTests {
 
     @Autowired
-    private MockMvc mockMvc;
+    private RestTestClient restClient;
 
     @Test
-    void shouldStartVerificationIdempotentlyAndCompleteWorkflow() throws Exception {
+    void shouldStartVerificationIdempotentlyAndCompleteWorkflow() {
         var request = request(UUID.randomUUID().toString());
 
-        var firstResponse = mockMvc.perform(post("/verifications")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.verificationId").exists())
-                .andExpect(jsonPath("$.status", oneOf("QUEUED", "IN_PROGRESS", "COMPLETED")))
-                .andReturn();
+        var firstResponse = restClient.post()
+                .uri("/verifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(request)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.verificationId").exists()
+                .jsonPath("$.status").value(status -> assertThat(status).isIn("QUEUED", "IN_PROGRESS", "COMPLETED"))
+                .returnResult();
 
-        var verificationId = verificationId(firstResponse.getResponse().getContentAsString());
+        var verificationId = verificationId(firstResponse.getResponseBody());
 
-        var secondResponse = mockMvc.perform(post("/verifications")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(request))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.verificationId", is(verificationId)))
-                .andExpect(jsonPath("$.status", oneOf("QUEUED", "IN_PROGRESS", "COMPLETED")))
-                .andReturn();
+        var secondResponse = restClient.post()
+                .uri("/verifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(request)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.verificationId").isEqualTo(verificationId)
+                .jsonPath("$.status").value(status -> assertThat(status).isIn("QUEUED", "IN_PROGRESS", "COMPLETED"))
+                .returnResult();
 
-        assertThat(verificationId(secondResponse.getResponse().getContentAsString()))
+        assertThat(verificationId(secondResponse.getResponseBody()))
                 .isEqualTo(verificationId);
 
         await().atMost(Duration.ofSeconds(3))
                 .pollInterval(Duration.ofMillis(50))
-                .untilAsserted(() -> mockMvc.perform(get("/verifications/{id}", verificationId))
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.verificationId", is(verificationId)))
-                        .andExpect(jsonPath("$.status", is("COMPLETED")))
-                        .andExpect(jsonPath("$.decision", is("APPROVED")))
-                        .andExpect(jsonPath("$.checks[0].type", is("FRAUD")))
-                        .andExpect(jsonPath("$.checks[0].status", is("PASSED"))));
+                .untilAsserted(() -> restClient.get()
+                        .uri("/verifications/{id}", verificationId)
+                        .exchange()
+                        .expectStatus().isOk()
+                        .expectBody()
+                        .jsonPath("$.verificationId").isEqualTo(verificationId)
+                        .jsonPath("$.status").isEqualTo("COMPLETED")
+                        .jsonPath("$.decision").isEqualTo("APPROVED")
+                        .jsonPath("$.checks[0].type").isEqualTo("FRAUD")
+                        .jsonPath("$.checks[0].status").isEqualTo("PASSED"));
     }
 
-    private String verificationId(String json) {
+    private String verificationId(byte[] responseBody) {
+        var json = new String(responseBody);
         return JsonPath.read(json, "$.verificationId");
     }
 
