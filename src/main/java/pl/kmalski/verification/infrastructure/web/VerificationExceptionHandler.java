@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.accept.InvalidApiVersionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -40,6 +41,7 @@ class VerificationExceptionHandler {
 
     @ExceptionHandler({
             InvalidVerificationException.class,
+            InvalidApiVersionException.class,
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class
     })

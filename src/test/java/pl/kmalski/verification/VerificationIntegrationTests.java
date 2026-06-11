@@ -37,7 +37,7 @@ class VerificationIntegrationTests {
         var request = request(UUID.randomUUID().toString());
 
         var firstResponse = restClient.post()
-                .uri("/verifications")
+                .uri("/v1/verifications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(request)
                 .exchange()
@@ -50,7 +50,7 @@ class VerificationIntegrationTests {
         var verificationId = verificationId(firstResponse.getResponseBody());
 
         var secondResponse = restClient.post()
-                .uri("/verifications")
+                .uri("/v1/verifications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(request)
                 .exchange()
@@ -66,7 +66,7 @@ class VerificationIntegrationTests {
         await().atMost(Duration.ofSeconds(3))
                 .pollInterval(Duration.ofMillis(50))
                 .untilAsserted(() -> restClient.get()
-                        .uri("/verifications/{id}", verificationId)
+                        .uri("/v1/verifications/{id}", verificationId)
                         .exchange()
                         .expectStatus().isOk()
                         .expectBody()

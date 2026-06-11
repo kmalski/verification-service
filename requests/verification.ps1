@@ -12,14 +12,14 @@ $startBody = @{
     }
 } | ConvertTo-Json -Depth 10
 
-Write-Host "POST $baseUrl/verifications"
+Write-Host "POST $baseUrl/v1/verifications"
 Write-Host "Request:"
 Write-Host $startBody
 Write-Host ""
 
 try {
     $startResponse = Invoke-RestMethod -Method Post `
-        -Uri "$baseUrl/verifications" `
+        -Uri "$baseUrl/v1/verifications" `
         -ContentType "application/json" `
         -Body $startBody
 } catch {
@@ -35,7 +35,7 @@ Write-Host ""
 $verificationId = $startResponse.verificationId
 
 while ($true) {
-    $getEndpoint = "$baseUrl/verifications/$verificationId"
+    $getEndpoint = "$baseUrl/v1/verifications/$verificationId"
     Write-Host "GET $getEndpoint"
 
     $getResponse = Invoke-RestMethod -Method Get `

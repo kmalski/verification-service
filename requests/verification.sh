@@ -21,14 +21,14 @@ start_body='{
   }
 }'
 
-echo "POST ${base_url}/verifications"
+echo "POST ${base_url}/v1/verifications"
 echo "Request:"
 echo "${start_body}"
 echo
 
 start_response="$(
   curl -sS \
-    -X POST "${base_url}/verifications" \
+    -X POST "${base_url}/v1/verifications" \
     -H 'Content-Type: application/json' \
     -d "${start_body}"
 )"
@@ -40,7 +40,7 @@ echo
 verification_id="$(printf '%s' "${start_response}" | jq -r '.verificationId')"
 
 while true; do
-  get_endpoint="${base_url}/verifications/${verification_id}"
+  get_endpoint="${base_url}/v1/verifications/${verification_id}"
 
   echo "GET ${get_endpoint}"
 

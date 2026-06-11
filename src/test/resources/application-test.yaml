@@ -16,7 +16,6 @@ verification:
     timeout: 5s
     enabled:
       - VELOCITY
-      - SANCTIONS
       - FRAUD
     velocity:
       window: 1m

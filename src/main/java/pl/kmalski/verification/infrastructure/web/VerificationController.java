@@ -9,7 +9,7 @@ import pl.kmalski.verification.application.usecase.startverification.StartVerifi
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/verifications")
+@RequestMapping("/{version}/verifications")
 @RequiredArgsConstructor
 class VerificationController {
 
@@ -17,14 +17,14 @@ class VerificationController {
     private final GetVerificationUseCase getVerificationUseCase;
     private final VerificationDtoMapper verificationDtoMapper;
 
-    @PostMapping
+    @PostMapping(version = "1.0")
     public StartVerificationResponse startVerification(@Valid @RequestBody StartVerificationRequest request) {
         var command = verificationDtoMapper.toStartVerificationCommand(request);
         var result = startVerificationUseCase.start(command);
         return verificationDtoMapper.toStartVerificationResponse(result);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", version = "1.0")
     public GetVerificationResponse getVerification(@PathVariable UUID id) {
         var query = verificationDtoMapper.toGetVerificationQuery(id);
         var result = getVerificationUseCase.get(query);

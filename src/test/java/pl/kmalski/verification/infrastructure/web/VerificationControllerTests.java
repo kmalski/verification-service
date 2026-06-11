@@ -53,7 +53,7 @@ class VerificationControllerTests {
         given(startVerificationUseCase.start(command)).willReturn(result);
 
         restClient.post()
-                .uri("/verifications")
+                .uri("/v1/verifications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(request())
                 .exchange()
@@ -81,7 +81,7 @@ class VerificationControllerTests {
         given(getVerificationUseCase.get(query)).willReturn(result);
 
         restClient.get()
-                .uri("/verifications/{id}", verificationId)
+                .uri("/v1/verifications/{id}", verificationId)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -96,7 +96,7 @@ class VerificationControllerTests {
     @Test
     void shouldReturnBadRequestWhenRequestBodyContainsInvalidCountry() {
         restClient.post()
-                .uri("/verifications")
+                .uri("/v1/verifications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(request("payment-1", "customer-1", "10.00", "PLN", "Poland"))
                 .exchange()
@@ -104,13 +104,13 @@ class VerificationControllerTests {
                 .expectBody()
                 .jsonPath("$.title").isEqualTo("Bad request")
                 .jsonPath("$.detail").isEqualTo("payment.country: Country must be a valid ISO 3166-1 alpha-2 code")
-                .jsonPath("$.instance").isEqualTo("/verifications");
+                .jsonPath("$.instance").isEqualTo("/v1/verifications");
     }
 
     @Test
     void shouldReturnBadRequestWhenPaymentIsMissing() {
         restClient.post()
-                .uri("/verifications")
+                .uri("/v1/verifications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("{}")
                 .exchange()
@@ -118,13 +118,13 @@ class VerificationControllerTests {
                 .expectBody()
                 .jsonPath("$.title").isEqualTo("Bad request")
                 .jsonPath("$.detail").isEqualTo("payment: must not be null")
-                .jsonPath("$.instance").isEqualTo("/verifications");
+                .jsonPath("$.instance").isEqualTo("/v1/verifications");
     }
 
     @Test
     void shouldReturnBadRequestWhenRequestBodyContainsBlankIdentifiers() {
         restClient.post()
-                .uri("/verifications")
+                .uri("/v1/verifications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(request(" ", "", "10.00", "PLN", "PL"))
                 .exchange()
@@ -134,13 +134,13 @@ class VerificationControllerTests {
                 .jsonPath("$.detail").value((String detail) -> assertThat(detail)
                         .contains("payment.customerId: must not be blank")
                         .contains("payment.paymentId: must not be blank"))
-                .jsonPath("$.instance").isEqualTo("/verifications");
+                .jsonPath("$.instance").isEqualTo("/v1/verifications");
     }
 
     @Test
     void shouldReturnBadRequestWhenRequestBodyContainsNonPositiveAmount() {
         restClient.post()
-                .uri("/verifications")
+                .uri("/v1/verifications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(request("payment-1", "customer-1", "0", "PLN", "PL"))
                 .exchange()
@@ -148,13 +148,13 @@ class VerificationControllerTests {
                 .expectBody()
                 .jsonPath("$.title").isEqualTo("Bad request")
                 .jsonPath("$.detail").isEqualTo("payment.amount: must be greater than 0")
-                .jsonPath("$.instance").isEqualTo("/verifications");
+                .jsonPath("$.instance").isEqualTo("/v1/verifications");
     }
 
     @Test
     void shouldReturnBadRequestWhenRequestBodyContainsInvalidCurrency() {
         restClient.post()
-                .uri("/verifications")
+                .uri("/v1/verifications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(request("payment-1", "customer-1", "10.00", "PLNN", "PL"))
                 .exchange()
@@ -162,7 +162,7 @@ class VerificationControllerTests {
                 .expectBody()
                 .jsonPath("$.title").isEqualTo("Bad request")
                 .jsonPath("$.detail").isEqualTo("payment.currency: Currency must be a valid ISO 4217 code")
-                .jsonPath("$.instance").isEqualTo("/verifications");
+                .jsonPath("$.instance").isEqualTo("/v1/verifications");
     }
 
     @Test
@@ -172,13 +172,13 @@ class VerificationControllerTests {
                 .willThrow(new VerificationNotFoundException(verificationId));
 
         restClient.get()
-                .uri("/verifications/{id}", verificationId)
+                .uri("/v1/verifications/{id}", verificationId)
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody()
                 .jsonPath("$.title").isEqualTo("Not found")
                 .jsonPath("$.detail").isEqualTo("Verification with id " + verificationId + " not found")
-                .jsonPath("$.instance").isEqualTo("/verifications/" + verificationId);
+                .jsonPath("$.instance").isEqualTo("/v1/verifications/" + verificationId);
     }
 
     @Test
@@ -187,14 +187,14 @@ class VerificationControllerTests {
                 .willThrow(new IllegalStateException("boom"));
 
         restClient.post()
-                .uri("/verifications")
+                .uri("/v1/verifications")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(request())
                 .exchange()
                 .expectStatus().is5xxServerError()
                 .expectBody()
                 .jsonPath("$.title").isEqualTo("Internal Server Error")
-                .jsonPath("$.instance").isEqualTo("/verifications");
+                .jsonPath("$.instance").isEqualTo("/v1/verifications");
     }
 
     private String request() {
