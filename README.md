@@ -39,7 +39,7 @@ The application starts on the default Spring Boot port: `http://localhost:8080`.
 ### Start verification
 
 ```http
-POST /verifications
+POST /v1/verifications
 Content-Type: application/json
 ```
 
@@ -69,7 +69,7 @@ Example response:
 ### Get verification
 
 ```http
-GET /verifications/{verificationId}
+GET /v1/verifications/{verificationId}
 ```
 
 Example response:
@@ -93,9 +93,9 @@ Example response:
 
 The `requests/` directory contains small smoke-test scripts that exercise the API end to end. They:
 
-1. Send `POST /verifications` with example payment data.
+1. Send `POST /v1/verifications` with example payment data.
 2. Read the returned `verificationId`.
-3. Poll `GET /verifications/{id}` every second.
+3. Poll `GET /v1/verifications/{id}` every second.
 4. Stop when the verification reaches `COMPLETED` or `FAILED`, or fail after 60 seconds.
 
 PowerShell:
